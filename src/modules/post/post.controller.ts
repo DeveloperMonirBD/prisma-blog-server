@@ -99,7 +99,6 @@ const updatePost = async (req: Request, res: Response) => {
             message: 'Post updated successfully!',
             data: result
         });
-    
     } catch (err: any) {
         res.status(500).json({
             success: false,
@@ -109,9 +108,30 @@ const updatePost = async (req: Request, res: Response) => {
     }
 };
 
+// delete post
+const deletePost = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await PostServices.deletePost(id as string);
+
+        res.status(200).json({
+            success: true,
+            message: 'Post deleted successfully!',
+            data: null
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err?.message || 'Failed to delete post',
+            err
+        });
+    }
+};
+
 export const PostController = {
     createPost,
     getAllPosts,
     getSinglePost,
-    updatePost
+    updatePost,
+    deletePost
 };
