@@ -85,8 +85,33 @@ const getSinglePost = async (req: Request, res: Response) => {
     }
 };
 
+// update post
+const updatePost = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        console.log('Updating Post ID:', id);
+        console.log('Update Data:', req.body);
+
+        const result = await PostServices.updatePost(id as string, req.body);
+
+        res.status(200).json({
+            success: true,
+            message: 'Post updated successfully!',
+            data: result
+        });
+    
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err?.message || 'Failed to update post',
+            err
+        });
+    }
+};
+
 export const PostController = {
     createPost,
     getAllPosts,
-    getSinglePost
+    getSinglePost,
+    updatePost
 };
