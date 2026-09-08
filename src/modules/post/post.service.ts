@@ -91,7 +91,31 @@ const getAllPosts = async (
     };
 };
 
+// get single post
+const getSinglePost = async (id: string): Promise<Post | null> => {
+    // Increase the view count by 1 as soon as the post is seen
+    const result = await prisma.post.update({
+        where: { id },
+        data: {
+            views: {
+                increment: 1
+            }
+        },
+        include: {
+            comments: {
+                where: { parentId: null }, // Will only bring the main comments
+                include: {
+                    replies: true // Will bring the replies to the main comment along
+                }
+            }
+        }
+    });
+
+    return result;
+};
+
 export const PostServices = {
     createPost,
-    getAllPosts
+    getAllPosts,
+    getSinglePost
 };

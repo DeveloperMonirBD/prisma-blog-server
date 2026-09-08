@@ -31,7 +31,7 @@ const getAllPosts = async (req: Request, res: Response) => {
         //     page: req.query.page ? Number(req.query.page) : undefined,
         //     limit: req.query.limit ? Number(req.query.limit) : undefined
         // };
-        
+
         // const result = await PostServices.getAllPosts(filters);
 
         // Query params option no: 2
@@ -65,7 +65,28 @@ const getAllPosts = async (req: Request, res: Response) => {
     }
 };
 
+// get Single Post
+const getSinglePost = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await PostServices.getSinglePost(id as string);
+
+        res.status(200).json({
+            success: true,
+            message: 'Post fetched successfully',
+            data: result
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err?.message || 'Failed to fetch post',
+            err
+        });
+    }
+};
+
 export const PostController = {
     createPost,
-    getAllPosts
+    getAllPosts,
+    getSinglePost
 };
