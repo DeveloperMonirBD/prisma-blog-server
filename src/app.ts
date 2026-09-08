@@ -1,12 +1,13 @@
-import express, { type Express, type Request, type Response } from 'express';
+import cors from 'cors';
+import express, { Application, type Request, type Response } from 'express';
+import globalErrorHandler from './middlewares/globalErrorHandler';
 import { postRouter } from './modules/post/post.route';
 
-const app: Express = express();
+const app: Application = express();
 
-// Parsers
+// Parsers / Middlewares
 app.use(express.json());
-
-app.use('/posts', postRouter);
+app.use(cors());
 
 // Health Check
 app.get('/', (req: Request, res: Response) => {
@@ -15,5 +16,19 @@ app.get('/', (req: Request, res: Response) => {
         message: 'Prisma Blog App Server is Running!'
     });
 });
+
+// Application Routes
+app.use('/posts', postRouter);
+
+// 404 Error handler
+app.use((req: Request, res: Response) => {
+    res.status(404).json({
+        success: false,
+        message: 'Api Route Not Found!'
+    });
+});
+
+// Global Error Handler
+app.use(globalErrorHandler);
 
 export default app;
