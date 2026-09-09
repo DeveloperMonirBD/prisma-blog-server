@@ -38,7 +38,7 @@ comprehensive **Zod Validations**, and a **Centralized Global Error Handler**.
 
 ## 📁 Project Structure
 
-````text
+```bash
 src/
 ├── config/
 │   └── index.ts                 # Environment variables configuration (dotenv)
@@ -75,10 +75,9 @@ Ensure you have the following installed on your machine:
 
 ### **Clone the repository:**
 
-   ```bash
-   git clone [https://github.com/DeveloperMonirBD/prisma-blog-server.git](https://github.com/DeveloperMonirBD/prisma-blog-server.git)
-   cd prisma-blog-server
-
+```bash
+git clone [https://github.com/DeveloperMonirBD/prisma-blog-server.git](https://github.com/DeveloperMonirBD/prisma-blog-server.git)
+cd prisma-blog-server
 ```
 
 ### Install dependencies:
