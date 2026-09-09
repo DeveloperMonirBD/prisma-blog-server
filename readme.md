@@ -59,6 +59,7 @@ src/
 ├── app.ts                       # Express app configuration & middleware setups
 └── server.ts                    # Server startup script & database listener
 
+```
 ---
 
 ## ⚡ Getting Started
@@ -72,12 +73,13 @@ Ensure you have the following installed on your machine:
 
 ### Installation Steps
 
--  **Clone the repository:**
+### **Clone the repository:**
+
    ```bash
    git clone [https://github.com/DeveloperMonirBD/prisma-blog-server.git](https://github.com/DeveloperMonirBD/prisma-blog-server.git)
    cd prisma-blog-server
 
-````
+```
 
 ### Install dependencies:
 
