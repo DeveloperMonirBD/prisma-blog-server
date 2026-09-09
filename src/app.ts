@@ -2,12 +2,17 @@ import cors from 'cors';
 import express, { Application, type Request, type Response } from 'express';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 import { postRouter } from './modules/post/post.route';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './lib/auth';
 
 const app: Application = express();
 
 // Parsers / Middlewares
 app.use(express.json());
 app.use(cors());
+
+// Better Auth Route Handler
+app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 // Health Check
 app.get('/', (req: Request, res: Response) => {
