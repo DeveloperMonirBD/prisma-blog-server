@@ -60,12 +60,15 @@ src/
 └── server.ts                    # Server startup script & database listener
 
 ```
+
 ---
 
 ## ⚡ Getting Started
 
 ### Prerequisites
+
 Ensure you have the following installed on your machine:
+
 - **Node.js** (v18 or higher)
 - **PostgreSQL** database instance running locally or hosted (e.g., Supabase, Neon, Render)
 
@@ -111,6 +114,7 @@ npx prisma migrate dev --name init
 npm run dev
 
 ```
+
 The application will be running live at http://localhost:5000.
 
 ---
@@ -119,17 +123,17 @@ The application will be running live at http://localhost:5000.
 
 ### Health Check
 
--   GET / — Check if the server is running properly.
+- GET / — Check if the server is running properly.
 
 ### Posts Module (/posts)
 
-| Method | Endpoint | Description | Validation |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/posts` | Create a new blog post | Zod Body Schema |
-| **GET** | `/posts` | Fetch all posts (Supports Search, Filtering, Pagination) | Zod Query Schema |
-| **GET** | `/posts/:id` | Get single post details (Increments view count) | Zod UUID Params Schema |
-| **PATCH** | `/posts/:id` | Update existing post details | Zod UUID & Body Schema |
-| **DELETE** | `/posts/:id` | Delete a post by ID | Zod UUID Params Schema |
+| Method     | Endpoint     | Description                                              | Validation             |
+| :--------- | :----------- | :------------------------------------------------------- | :--------------------- |
+| **POST**   | `/posts`     | Create a new blog post                                   | Zod Body Schema        |
+| **GET**    | `/posts`     | Fetch all posts (Supports Search, Filtering, Pagination) | Zod Query Schema       |
+| **GET**    | `/posts/:id` | Get single post details (Increments view count)          | Zod UUID Params Schema |
+| **PATCH**  | `/posts/:id` | Update existing post details                             | Zod UUID & Body Schema |
+| **DELETE** | `/posts/:id` | Delete a post by ID                                      | Zod UUID Params Schema |
 
 ---
 
@@ -139,17 +143,16 @@ The application will be running live at http://localhost:5000.
 
 ```json
 {
-  "success": false,
-  "message": "Validation Error",
-  "errorSources": [
-    {
-      "path": "title",
-      "message": "Title is required"
-    }
-  ],
-  "stack": null
+    "success": false,
+    "message": "Validation Error",
+    "errorSources": [
+        {
+            "path": "title",
+            "message": "Title is required"
+        }
+    ],
+    "stack": null
 }
-
 ```
 
 ---
@@ -167,4 +170,3 @@ npx prisma studio
 npx prisma migrate dev
 
 ```
-
