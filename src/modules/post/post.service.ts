@@ -4,14 +4,14 @@ import { IPaginationOptions, IPostFilterableFields } from './post.interface';
 
 // create post
 const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
-    // 1. Check if there is already any post with this title
+    // Check if there is already any post with this title
     const isPostExist = await prisma.post.findFirst({
         where: {
             title: data.title
         }
     });
 
-    // 2. If it's from a POST, then give an error instead of creating
+    // If it's from a POST, then give an error instead of creating
     if (isPostExist) {
         throw new Error('A post with this title already exists!');
     }

@@ -7,7 +7,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     let message = err?.message || 'Something went wrong!';
     let errorSources: Array<{ path: string; message: string }> = [];
 
-    // ১. Prisma Known Request Errors
+    // Prisma Known Request Errors
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         // Unique Constraint Violation (P2002)
         if (err.code === 'P2002') {
@@ -23,6 +23,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
                 }
             ];
         }
+
         // Record Not Found Error (P2025)
         else if (err.code === 'P2025') {
             statusCode = 404;
@@ -35,7 +36,8 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
             ];
         }
     }
-    // ২. General Generic Error
+
+    // General Generic Error
     else if (err instanceof Error) {
         errorSources = [
             {
