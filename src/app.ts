@@ -1,15 +1,20 @@
+import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
 import express, { Application, type Request, type Response } from 'express';
+import { auth } from './lib/auth';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 import { postRouter } from './modules/post/post.route';
-import { toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth';
 
 const app: Application = express();
 
 // Parsers / Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.APP_URL || ' http://localhost:3000',
+        credentials: true
+    })
+);
 
 // Better Auth Route Handler
 app.all('/api/auth/{*any}', toNodeHandler(auth));
