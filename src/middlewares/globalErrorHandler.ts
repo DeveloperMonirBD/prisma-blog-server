@@ -1,21 +1,47 @@
 // src/app/middlewares/globalErrorHandler.ts
+
 import { ErrorRequestHandler } from 'express';
+import { ZodError } from 'zod';
+
 import { Prisma } from '../../generated/prisma/client';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     let statusCode = 500;
-    let message = err?.message || 'Something went wrong!';
-    let errorSources: Array<{ path: string; message: string }> = [];
 
+    let message = err?.message || 'Something went wrong!';
+
+    let errorSources: Array<{
+        path: string;
+        message: string;
+    }> = [];
+
+    // ==============================
+    // Zod Validation Error
+    // ==============================
+    if (err instanceof ZodError) {
+        statusCode = 400;
+        message = 'Validation Error';
+
+        errorSources = err.issues.map(issue => ({
+            path: issue.path.join('.'),
+            message: issue.message
+        }));
+    }
+
+    // ==============================
     // Prisma Known Request Errors
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation (P2002)
+    // ==============================
+    else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation - P2002
         if (err.code === 'P2002') {
-            statusCode = 400;
-            const target = (err.meta?.target as string[]) || [];
+            statusCode = 409;
+
+            const target = err.meta?.target;
+
             const fieldName = Array.isArray(target) ? target.join(', ') : 'field';
 
-            message = `Duplicate Entry: A post with this ${fieldName} already exists!`;
+            message = 'Duplicate Entry';
+
             errorSources = [
                 {
                     path: fieldName,
@@ -24,20 +50,24 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
             ];
         }
 
-        // Record Not Found Error (P2025)
+        // Record Not Found - P2025
         else if (err.code === 'P2025') {
             statusCode = 404;
-            message = 'Post Not Found!';
+
+            message = 'Resource Not Found';
+
             errorSources = [
                 {
-                    path: 'id',
-                    message: 'No post found with the provided ID.'
+                    path: '',
+                    message: 'The requested resource was not found.'
                 }
             ];
         }
     }
 
-    // General Generic Error
+    // ==============================
+    // Generic Error
+    // ==============================
     else if (err instanceof Error) {
         errorSources = [
             {
@@ -47,7 +77,9 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         ];
     }
 
-    // Standard API Response Structure
+    // ==============================
+    // Final Response
+    // ==============================
     res.status(statusCode).json({
         success: false,
         message,

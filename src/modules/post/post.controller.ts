@@ -4,7 +4,10 @@ import { PostServices } from './post.service';
 
 // create post
 const createPost = catchAsync(async (req: Request, res: Response) => {
-    const result = await PostServices.createPost(req.body);
+    const result = await PostServices.createPost({
+        ...req.body,
+        authorId: req.user!.id
+    });
 
     res.status(201).json({
         success: true,

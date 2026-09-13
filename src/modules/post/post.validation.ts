@@ -26,11 +26,7 @@ const createPostValidationSchema = z.object({
             })
             .optional(),
 
-        tags: z.array(z.string()).optional(),
-
-        authorId: z.string({
-            message: 'Author ID is required'
-        })
+        tags: z.array(z.string()).optional()
     })
 });
 

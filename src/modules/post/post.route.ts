@@ -1,4 +1,5 @@
 import express from 'express';
+import { auth } from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { PostController } from './post.controller';
 import { PostValidations } from './post.validation';
@@ -8,6 +9,7 @@ const router = express.Router();
 // Create Post (Body Validate)
 router.post(
     '/',
+    auth('ADMIN', 'USER'),
     validateRequest(PostValidations.createPostValidationSchema),
     PostController.createPost
 );
@@ -37,6 +39,7 @@ router.patch(
 // Delete Post (UUID Validate)
 router.delete(
     '/:id',
+    auth('ADMIN'),
     validateRequest(PostValidations.postIdParamValidationSchema),
     PostController.deletePost
 );
