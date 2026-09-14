@@ -1,43 +1,53 @@
-import { auth } from '../lib/auth';
+import AppError from '../errors/AppError';
+import { auth as betterAuth } from '../lib/auth';
 import { prisma } from '../lib/prisma';
+import catchAsync from '../utils/catchAsync';
 
-const seedAdmin = async () => {
-    try {
-        const adminEmail = 'admin@example.com';
+const seedAdmin = catchAsync(async (req, res) => {
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
-        const existingAdmin = await prisma.user.findUnique({
-            where: {
-                email: adminEmail
-            }
-        });
-
-        if (existingAdmin) {
-            console.log('Admin already exists');
-            return;
-        }
-
-        const response = await auth.api.signUpEmail({
-            body: {
-                name: 'Admin',
-                email: adminEmail,
-                password: 'AdminPassword123!'
-            }
-        });
-
-        console.log('Admin created:', response.user.email);
-
-        await prisma.user.update({
-            where: {
-                id: response.user.id
-            },
-            data: {
-                role: 'ADMIN',
-                emailVerified: true
-            }
-        });
-
-        console.log('Admin role assigned successfully');
-    } catch (err) {
-        console.error('Admin seeding failed:', err);
+    if (!adminEmail || !adminPassword) {
+        throw new AppError(500, 'ADMIN_EMAIL and ADMIN_PASSWORD are required');
     }
-};
+
+    const existingAdmin = await prisma.user.findUnique({
+        where: {
+            email: adminEmail
+        }
+    });
+
+    if (existingAdmin) {
+        throw new AppError(409, 'Admin user already exists');
+    }
+
+    const response = await betterAuth.api.signUpEmail({
+        body: {
+            name: 'Admin',
+            email: adminEmail,
+            password: adminPassword
+        }
+    });
+
+    if (!response.user) {
+        throw new AppError(500, 'Failed to create admin user');
+    }
+
+    await prisma.user.update({
+        where: {
+            id: response.user.id
+        },
+        data: {
+            role: 'ADMIN',
+            status: 'ACTIVE',
+            emailVerified: true
+        }
+    });
+
+    res.status(201).json({
+        success: true,
+        message: 'Admin created successfully'
+    });
+});
+
+export default seedAdmin;
