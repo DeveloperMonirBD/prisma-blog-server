@@ -8,8 +8,8 @@ export interface IPostFilterableFields {
 }
 
 export interface IPaginationOptions {
-    page?: number | undefined;
-    limit?: number | undefined;
-    sortBy?: string | undefined;
-    sortOrder?: 'asc' | 'desc' | undefined;
+    page?: number;
+    limit?: number;
+    sortBy?: 'title' | 'createdAt';
+    sortOrder?: 'asc' | 'desc';
 }

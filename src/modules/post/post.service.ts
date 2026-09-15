@@ -29,32 +29,16 @@ const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
 };
 
 //get all posts
-const getAllPosts = async (
-    // // Option no:1
-    //     filters:{
-    //     searchTerm?: string | undefined;
-    //     status?: PostStatus | undefined;
-    //     isFeatured?: boolean | undefined;
-    //     page?: number | undefined;
-    //     limit?: number | undefined;
-    //  }
-
-    // Option no:2
-    filters: IPostFilterableFields,
-    options: IPaginationOptions
-) => {
-    // // Option no:1
-    // const { searchTerm, status, isFeatured, page = 1, limit = 10 } = filters;
-
-    // Option no:2
+const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationOptions) => {
     const { searchTerm, status, tags, isFeatured } = filters;
-    const { page = 1, limit = 10 } = options;
+
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options;
 
     const skip = (page - 1) * limit;
 
     const andConditions: Prisma.PostWhereInput[] = [];
 
-    // title or content search logice
+    // title or content search logic
     if (searchTerm) {
         andConditions.push({
             OR: [
@@ -107,7 +91,7 @@ const getAllPosts = async (
         skip,
         take: limit,
         orderBy: {
-            createdAt: 'desc'
+            [sortBy]: sortOrder
         },
         include: {
             _count: {
