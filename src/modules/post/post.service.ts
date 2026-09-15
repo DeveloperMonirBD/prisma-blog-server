@@ -7,7 +7,10 @@ const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
     // Check if there is already any post with this title
     const isPostExist = await prisma.post.findFirst({
         where: {
-            title: data.title
+            title: {
+                equals: data.title,
+                mode: 'insensitive'
+            }
         }
     });
 
@@ -44,19 +47,44 @@ const getAllPosts = async (
     // const { searchTerm, status, isFeatured, page = 1, limit = 10 } = filters;
 
     // Option no:2
-    const { searchTerm, status, isFeatured } = filters;
+    const { searchTerm, status, tags, isFeatured } = filters;
     const { page = 1, limit = 10 } = options;
 
     const skip = (page - 1) * limit;
+
     const andConditions: Prisma.PostWhereInput[] = [];
 
     // title or content search logice
     if (searchTerm) {
         andConditions.push({
             OR: [
-                { title: { contains: searchTerm, mode: 'insensitive' } },
-                { content: { contains: searchTerm, mode: 'insensitive' } }
+                {
+                    title: {
+                        contains: searchTerm,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    content: {
+                        contains: searchTerm,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    tags: {
+                        has: searchTerm
+                    }
+                }
             ]
+        });
+    }
+
+    // Filter by tags
+    if (tags && tags.length > 0) {
+        andConditions.push({
+            tags: {
+                hasEvery: tags
+            }
         });
     }
 
@@ -132,7 +160,6 @@ const updatePost = async (id: string, payload: Partial<Prisma.PostUpdateInput>):
         where: { id },
         data: payload
     });
-    console.log(result);
 
     return result;
 };

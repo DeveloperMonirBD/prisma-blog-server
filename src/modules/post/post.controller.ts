@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+import { PostStatus } from '../../../generated/prisma/client';
 import catchAsync from '../../utils/catchAsync';
+import { IPostFilterableFields } from './post.interface';
 import { PostServices } from './post.service';
 
 // create post
@@ -18,10 +20,11 @@ const createPost = catchAsync(async (req: Request, res: Response) => {
 
 // get all posts
 const getAllPosts = catchAsync(async (req: Request, res: Response) => {
-    const filters = {
-        searchTerm: req.query.searchTerm as string,
-        status: req.query.status as any,
-        isFeatured: req.query.isFeatured ? req.query.isFeatured === 'true' : undefined
+    const filters: IPostFilterableFields = {
+        searchTerm: req.query.searchTerm as string | undefined,
+        status: req.query.status as PostStatus | undefined,
+        tags: req.query.tags ? (req.query.tags as string).split(',') : [],
+        isFeatured: req.query.isFeatured !== undefined ? req.query.isFeatured === 'true' : undefined
     };
 
     const options = {
