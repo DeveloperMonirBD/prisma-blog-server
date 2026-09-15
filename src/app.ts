@@ -3,7 +3,8 @@ import cors from 'cors';
 import express, { Application, type Request, type Response } from 'express';
 import { auth } from './lib/auth';
 import globalErrorHandler from './middlewares/globalErrorHandler';
-import { postRouter } from './modules/post/post.route';
+import { PostRouter } from './modules/post/post.route';
+import { CommentRouter } from './modules/comment/comment.route';
 
 const app: Application = express();
 
@@ -28,7 +29,10 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Application Routes
-app.use('/posts', postRouter);
+app.use('/api/posts', PostRouter);
+
+// Comment Routes
+app.use('/api/comments', CommentRouter);
 
 // 404 Error handler
 app.use((req: Request, res: Response) => {

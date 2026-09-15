@@ -44,4 +44,4 @@ router.delete(
     PostController.deletePost
 );
 
-export const postRouter = router;
+export const PostRouter = router;
