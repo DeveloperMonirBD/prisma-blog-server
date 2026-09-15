@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Create Post (Body Validate)
 router.post(
-    '/',
+    '/posts',
     auth('ADMIN', 'USER'),
     validateRequest(PostValidations.createPostValidationSchema),
     PostController.createPost
@@ -16,21 +16,21 @@ router.post(
 
 // Get All Posts (Query Params Validate)
 router.get(
-    '/',
+    '/posts',
     validateRequest(PostValidations.getAllPostsQueryValidationSchema),
     PostController.getAllPosts
 );
 
 // Get Single Post (UUID Validate)
 router.get(
-    '/:id',
+    '/posts/:id',
     validateRequest(PostValidations.postIdParamValidationSchema),
     PostController.getSinglePost
 );
 
 // Update Post (Params UUID & Body Validate)
 router.patch(
-    '/:id',
+    '/posts/:id',
     validateRequest(PostValidations.postIdParamValidationSchema),
     validateRequest(PostValidations.updatePostValidationSchema),
     PostController.updatePost
@@ -38,7 +38,7 @@ router.patch(
 
 // Delete Post (UUID Validate)
 router.delete(
-    '/:id',
+    '/posts/:id',
     auth('ADMIN'),
     validateRequest(PostValidations.postIdParamValidationSchema),
     PostController.deletePost

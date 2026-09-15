@@ -29,10 +29,10 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Application Routes
-app.use('/api/posts', PostRouter);
+app.use('/api', PostRouter);
 
 // Comment Routes
-app.use('/api/comments', CommentRouter);
+app.use('/api', CommentRouter);
 
 // 404 Error handler
 app.use((req: Request, res: Response) => {
