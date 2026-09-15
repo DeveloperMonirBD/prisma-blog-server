@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { PostStatus } from '../../../generated/prisma/client';
+import { IPaginationOptions } from '../../types/pagination';
 import catchAsync from '../../utils/catchAsync';
-import { IPaginationOptions, IPostFilterableFields } from './post.interface';
+import { getPaginationOptions } from '../../utils/pagination';
+import { IPostFilterableFields } from './post.interface';
 import { PostServices } from './post.service';
 
 // create post
@@ -27,17 +29,7 @@ const getAllPosts = catchAsync(async (req: Request, res: Response) => {
         isFeatured: req.query.isFeatured !== undefined ? req.query.isFeatured === 'true' : undefined
     };
 
-    // const options = {
-    //     page: req.query.page ? Number(req.query.page) : 1,
-    //     limit: req.query.limit ? Number(req.query.limit) : 10,
-    // };
-
-    const options: IPaginationOptions = {
-        page: Number(req.query.page) || 1,
-        limit: Number(req.query.limit) || 10,
-        sortBy: req.query.sortBy as 'title' | 'createdAt',
-        sortOrder: req.query.sortOrder as 'asc' | 'desc'
-    };
+    const options: IPaginationOptions = getPaginationOptions(req);
 
     const result = await PostServices.getAllPosts(filters, options);
 

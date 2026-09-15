@@ -6,10 +6,3 @@ export interface IPostFilterableFields {
     tags?: string[] | undefined;
     isFeatured?: boolean | undefined;
 }
-
-export interface IPaginationOptions {
-    page?: number;
-    limit?: number;
-    sortBy?: 'title' | 'createdAt';
-    sortOrder?: 'asc' | 'desc';
-}

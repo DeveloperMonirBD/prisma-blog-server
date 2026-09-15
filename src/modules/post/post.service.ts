@@ -1,6 +1,7 @@
 import { Post, Prisma } from '../../../generated/prisma/client';
 import { prisma } from '../../lib/prisma';
-import { IPaginationOptions, IPostFilterableFields } from './post.interface';
+import { IPaginationOptions } from '../../types/pagination';
+import { IPostFilterableFields } from './post.interface';
 
 // create post
 const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
