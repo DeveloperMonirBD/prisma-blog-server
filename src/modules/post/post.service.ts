@@ -29,7 +29,7 @@ const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
     return result;
 };
 
-//get all posts
+// get all posts
 const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationOptions) => {
     const { searchTerm, status, tags, isFeatured } = filters;
 
@@ -117,7 +117,7 @@ const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationO
 };
 
 // get single post
-const getSinglePost = async (id: string): Promise<Post | null> => {
+const getSinglePost = async (id: string) => {
     const result = await prisma.post.update({
         where: {
             id
@@ -137,60 +137,6 @@ const getSinglePost = async (id: string): Promise<Post | null> => {
                     id: true,
                     name: true,
                     image: true
-                }
-            },
-
-            // Main comments
-            comments: {
-                where: {
-                    parentId: null,
-                    status: 'APPROVED'
-                },
-
-                // Newest comments first
-                orderBy: {
-                    createdAt: 'desc'
-                },
-
-                include: {
-                    // Comment author
-                    author: {
-                        select: {
-                            id: true,
-                            name: true,
-                            image: true
-                        }
-                    },
-
-                    // Replies
-                    replies: {
-                        where: {
-                            status: 'APPROVED'
-                        },
-
-                        // Oldest reply first
-                        orderBy: {
-                            createdAt: 'asc'
-                        },
-
-                        include: {
-                            // Reply author
-                            author: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    image: true
-                                }
-                            }
-                        }
-                    },
-
-                    // Number of replies
-                    _count: {
-                        select: {
-                            replies: true
-                        }
-                    }
                 }
             },
 

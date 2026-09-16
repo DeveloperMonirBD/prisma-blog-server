@@ -19,22 +19,6 @@ const createPostComment = async (
         throw new Error('Post not found!');
     }
 
-    // if (data.parentId) {
-    //     const parentComment = await prisma.comment.findUnique({
-    //         where: {
-    //             id: data.parentId
-    //         }
-    //     });
-
-    //     if (!parentComment) {
-    //         throw new Error('Parent comment not found!');
-    //     }
-
-    //     if (parentComment.postId !== data.postId) {
-    //         throw new Error('Parent comment does not belong to this post!');
-    //     }
-    // }
-
     const result = await prisma.comment.create({
         data: {
             comment: data.comment,
@@ -77,7 +61,10 @@ const createPostReply = async (
 
 // get post comments
 const getPostComments = async (postId: string, page: number = 1, limit: number = 10) => {
-    const skip = (page - 1) * limit;
+    const currentPage = Math.max(1, page);
+    const currentLimit = Math.min(Math.max(1, limit), 50);
+
+    const skip = (currentPage - 1) * currentLimit;
 
     const [comments, total] = await Promise.all([
         prisma.comment.findMany({
@@ -92,7 +79,7 @@ const getPostComments = async (postId: string, page: number = 1, limit: number =
             },
 
             skip,
-            take: limit,
+            take: currentLimit,
 
             include: {
                 author: {
@@ -125,7 +112,11 @@ const getPostComments = async (postId: string, page: number = 1, limit: number =
 
                 _count: {
                     select: {
-                        replies: true
+                        replies: {
+                            where: {
+                                status: 'APPROVED'
+                            }
+                        }
                     }
                 }
             }
@@ -140,14 +131,16 @@ const getPostComments = async (postId: string, page: number = 1, limit: number =
         })
     ]);
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / currentLimit);
 
     return {
         meta: {
-            page,
-            limit,
+            page: currentPage,
+            limit: currentLimit,
             total,
-            totalPages
+            totalPages,
+            hasNextPage: currentPage < totalPages,
+            hasPreviousPage: currentPage > 1
         },
         data: comments
     };

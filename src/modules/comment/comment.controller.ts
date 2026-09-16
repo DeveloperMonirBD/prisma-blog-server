@@ -13,7 +13,7 @@ const createPostComment = catchAsync(async (req: Request, res: Response) => {
 
     const authorId = req.user?.id as string ;
 
-    const result = await CommentServices.createComment(postId, authorId, req.body);
+    const result = await CommentServices.createPostComment(postId, authorId, req.body);
 
     res.status(201).json({
         success: true,
@@ -32,7 +32,7 @@ const createPostReply = catchAsync(async (req: Request, res: Response) => {
 
     const authorId = req.user?.id as string;
 
-    const result = await CommentServices.createReply(commentId, authorId, req.body);
+    const result = await CommentServices.createPostReply(commentId, authorId, req.body);
 
     res.status(201).json({
         success: true,
