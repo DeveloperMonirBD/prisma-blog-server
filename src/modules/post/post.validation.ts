@@ -21,8 +21,8 @@ const createPostValidationSchema = z.object({
         isFeatured: z.boolean().optional().default(false),
 
         status: z
-            .enum(['DRAFT', 'PUBLISHED'], {
-                message: "Status must be either 'DRAFT' or 'PUBLISHED'"
+            .enum(['DRAFT', 'PUBLISHED', 'ARCHIVED'], {
+                message: "Status must be either 'DRAFT', 'PUBLISHED' or 'ARCHIVED'"
             })
             .optional(),
 
@@ -59,9 +59,12 @@ const updatePostValidationSchema = z.object({
         content: z.string().min(10).optional(),
         thumbnail: z.string().url().optional(),
         isFeatured: z.boolean().optional(),
-        status: z.enum(['DRAFT', 'PUBLISHED']).optional(),
-        tags: z.array(z.string()).optional(),
-        authorId: z.string().optional()
+        status: z
+            .enum(['DRAFT', 'PUBLISHED', 'ARCHIVED'], {
+                message: 'Status must be DRAFT, PUBLISHED, or ARCHIVED'
+            })
+            .optional(),
+        tags: z.array(z.string()).optional()
     })
 });
 
