@@ -1,21 +1,27 @@
 import express from 'express';
-import { CommentControllers } from './comment.controller';
 import { auth } from '../../middlewares/auth';
+import { CommentControllers } from './comment.controller';
 
 const router = express.Router();
 
 // create comment
 router.post(
     '/posts/:postId/comments',
-    auth(),
-    CommentControllers.createComment
+    auth('ADMIN', 'USER'),
+    CommentControllers.createPostComment
 );
 
 // create replay comment
 router.post(
     '/comments/:commentId/replies',
-    auth(),
-    CommentControllers.createReply
+    auth('ADMIN', 'USER'),
+    CommentControllers.createPostReply
+);
+
+// get all comments
+router.get(
+    '/posts/:postId/comments',
+    CommentControllers.getPostComments
 );
 
 export const CommentRouter = router;

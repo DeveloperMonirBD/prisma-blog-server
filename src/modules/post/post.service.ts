@@ -118,19 +118,91 @@ const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationO
 
 // get single post
 const getSinglePost = async (id: string): Promise<Post | null> => {
-    // Increase the view count by 1 as soon as the post is seen
     const result = await prisma.post.update({
-        where: { id },
+        where: {
+            id
+        },
+
+        // Increase view count whenever the post is viewed
         data: {
             views: {
                 increment: 1
             }
         },
+
         include: {
+            // Post author
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            },
+
+            // Main comments
             comments: {
-                where: { parentId: null }, // Will only bring the main comments
+                where: {
+                    parentId: null,
+                    status: 'APPROVED'
+                },
+
+                // Newest comments first
+                orderBy: {
+                    createdAt: 'desc'
+                },
+
                 include: {
-                    replies: true // Will bring the replies to the main comment along
+                    // Comment author
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            image: true
+                        }
+                    },
+
+                    // Replies
+                    replies: {
+                        where: {
+                            status: 'APPROVED'
+                        },
+
+                        // Oldest reply first
+                        orderBy: {
+                            createdAt: 'asc'
+                        },
+
+                        include: {
+                            // Reply author
+                            author: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    image: true
+                                }
+                            }
+                        }
+                    },
+
+                    // Number of replies
+                    _count: {
+                        select: {
+                            replies: true
+                        }
+                    }
+                }
+            },
+
+            // Total approved main comments
+            _count: {
+                select: {
+                    comments: {
+                        where: {
+                            parentId: null,
+                            status: 'APPROVED'
+                        }
+                    }
                 }
             }
         }

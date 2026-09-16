@@ -3,7 +3,7 @@ import { prisma } from '../../lib/prisma';
 import { ICreateComment } from './comment.interface';
 
 // create comment
-const createComment = async (
+const createPostComment = async (
     postId: string,
     authorId: string,
     data: ICreateComment
@@ -47,7 +47,7 @@ const createComment = async (
 };
 
 // create comment replay
-const createReply = async (
+const createPostReply = async (
     commentId: string,
     authorId: string,
     data: ICreateComment
@@ -75,7 +75,86 @@ const createReply = async (
     return result;
 };
 
+// get post comments
+const getPostComments = async (postId: string, page: number = 1, limit: number = 10) => {
+    const skip = (page - 1) * limit;
+
+    const [comments, total] = await Promise.all([
+        prisma.comment.findMany({
+            where: {
+                postId,
+                parentId: null,
+                status: 'APPROVED'
+            },
+
+            orderBy: {
+                createdAt: 'desc'
+            },
+
+            skip,
+            take: limit,
+
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true
+                    }
+                },
+
+                replies: {
+                    where: {
+                        status: 'APPROVED'
+                    },
+
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
+
+                    include: {
+                        author: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true
+                            }
+                        }
+                    }
+                },
+
+                _count: {
+                    select: {
+                        replies: true
+                    }
+                }
+            }
+        }),
+
+        prisma.comment.count({
+            where: {
+                postId,
+                parentId: null,
+                status: 'APPROVED'
+            }
+        })
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages
+        },
+        data: comments
+    };
+};
+
 export const CommentServices = {
-    createComment,
-    createReply
+    createPostComment,
+    createPostReply,
+    getPostComments
 };
