@@ -203,12 +203,47 @@ const deleteComment = async (commentId: string, userId: string) => {
     });
 };
 
+// Update Comment Status — Admin
+const updateCommentStatus = async (
+    commentId: string,
+    payload: { status: 'PENDING' | 'APPROVED' | 'REJECTED' }
+) => {
+    const existingComment = await prisma.comment.findUnique({
+        where: {
+            id: commentId
+        }
+    });
 
+    if (!existingComment) {
+        throw new AppError(404, 'Comment not found');
+    }
+
+    const result = await prisma.comment.update({
+        where: {
+            id: commentId
+        },
+        data: {
+            status: payload.status
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            }
+        }
+    });
+
+    return result;
+};
 
 export const CommentServices = {
     createPostComment,
     createPostReply,
     getPostComments,
     updateComment,
-    deleteComment
+    deleteComment,
+    updateCommentStatus
 };

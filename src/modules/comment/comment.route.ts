@@ -49,13 +49,13 @@ router.delete(
     CommentControllers.deleteComment
 );
 
-// // Update Comment Status — Admin
-// router.patch(
-//     '/comments/:id/status',
-//     auth('ADMIN'),
-//     validateRequest(CommentValidations.commentIdParamValidationSchema),
-//     validateRequest(CommentValidations.updateCommentStatusValidationSchema),
-//     CommentControllers.updateCommentStatus
-// );
+// Update Comment Status — Admin
+router.patch(
+    '/comments/:commentId/status',
+    auth('ADMIN'),
+    validateRequest(CommentValidations.commentIdParamValidationSchema),
+    validateRequest(CommentValidations.updateCommentStatusValidationSchema),
+    CommentControllers.updateCommentStatus
+);
 
 export const CommentRouter = router;

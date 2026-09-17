@@ -82,10 +82,29 @@ const deleteComment = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// Update Comment Status — Admin
+const updateCommentStatus = catchAsync(
+    async (req: Request, res: Response) => {
+        const { commentId } = req.params;
+
+        const result = await CommentServices.updateCommentStatus(
+            commentId as string,
+            req.body
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Comment status updated successfully!',
+            data: result
+        });
+    }
+);
+
 export const CommentControllers = {
     createPostComment,
     createPostReply,
     getPostComments,
     updateComment,
-    deleteComment
+    deleteComment,
+    updateCommentStatus
 };
