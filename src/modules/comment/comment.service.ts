@@ -1,4 +1,5 @@
 import { Comment as PrismaComment } from '../../../generated/prisma/client';
+import AppError from '../../errors/AppError';
 import { prisma } from '../../lib/prisma';
 import { ICreateComment } from './comment.interface';
 
@@ -146,8 +147,68 @@ const getPostComments = async (postId: string, page: number = 1, limit: number =
     };
 };
 
+// update comment
+const updateComment = async (
+    commentId: string,
+    userId: string,
+    payload: {comment: string}
+) => {
+    const existingComment = await prisma.comment.findUnique({
+        where: {
+            id: commentId
+        }
+    });
+
+    if (!existingComment) {
+        throw new AppError(404, 'Comment not found');
+    }
+
+    if (existingComment.authorId !== userId) {
+        throw new AppError(403, 'You are not authorized to update this comment');
+    }
+
+    const result = await prisma.comment.update({
+        where: {
+            id: commentId
+        },
+
+        data: {
+            comment: payload.comment
+        }
+    });
+
+    return result;
+};
+
+// delete comment
+const deleteComment = async (commentId: string, userId: string) => {
+    const existingComment = await prisma.comment.findUnique({
+        where: {
+            id: commentId
+        }
+    });
+
+    if (!existingComment) {
+        throw new AppError(404, 'Comment not found');
+    }
+
+    if (existingComment.authorId !== userId) {
+        throw new AppError(403, 'You are not authorized to delete this comment')
+    }
+    
+    await prisma.comment.delete({
+        where: {
+            id: commentId
+        }
+    });
+};
+
+
+
 export const CommentServices = {
     createPostComment,
     createPostReply,
-    getPostComments
+    getPostComments,
+    updateComment,
+    deleteComment
 };

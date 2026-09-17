@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
+import AppError from '../../errors/AppError';
 import catchAsync from '../../utils/catchAsync';
 import { CommentServices } from './comment.service';
-import AppError from '../../errors/AppError';
 
 // create comment
 const createPostComment = catchAsync(async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ const createPostComment = catchAsync(async (req: Request, res: Response) => {
         throw new AppError(400, 'Post ID is required!');
     }
 
-    const authorId = req.user?.id as string ;
+    const authorId = req.user?.id as string;
 
     const result = await CommentServices.createPostComment(postId, authorId, req.body);
 
@@ -58,8 +58,34 @@ const getPostComments = catchAsync(async (req, res) => {
     });
 });
 
+// update comment
+const updateComment = catchAsync(async (req: Request, res: Response) => {
+    const { commentId } = req.params;
+    const result = await CommentServices.updateComment(commentId as string, req.user!.id, req.body);
+
+    res.status(200).json({
+        success: true,
+        message: 'Comment update successfully',
+        data: result
+    });
+});
+
+// delete comment
+const deleteComment = catchAsync(async (req: Request, res: Response) => {
+    const { commentId } = req.params;
+
+    await CommentServices.deleteComment(commentId as string, req.user!.id);
+
+    res.status(200).json({
+        success: true,
+        message: 'Comment deleted successfully!'
+    });
+});
+
 export const CommentControllers = {
     createPostComment,
     createPostReply,
-    getPostComments
+    getPostComments,
+    updateComment,
+    deleteComment
 };

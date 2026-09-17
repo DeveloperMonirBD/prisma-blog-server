@@ -19,12 +19,12 @@ router.post(
 router.post(
     '/comments/:commentId/replies',
     auth('ADMIN', 'USER'),
-    validateRequest(CommentValidations.postIdParamValidationSchema),
+    validateRequest(CommentValidations.commentIdParamValidationSchema),
     validateRequest(CommentValidations.createCommentValidationSchema),
     CommentControllers.createPostReply
 );
 
-// get all comments
+// get Post comments
 router.get(
     '/posts/:postId/comments',
     validateRequest(CommentValidations.postIdParamValidationSchema),
@@ -32,22 +32,22 @@ router.get(
     CommentControllers.getPostComments
 );
 
-// // Update Comment
-// router.patch(
-//     '/comments/:id',
-//     auth(),
-//     validateRequest(CommentValidations.commentIdParamValidationSchema),
-//     validateRequest(CommentValidations.updateCommentValidationSchema),
-//     CommentControllers.updateComment
-// );
+// Update Comment
+router.patch(
+    '/comments/:commentId',
+    auth('ADMIN', 'USER'),
+    validateRequest(CommentValidations.commentIdParamValidationSchema),
+    validateRequest(CommentValidations.updateCommentValidationSchema),
+    CommentControllers.updateComment
+);
 
-// // Delete Comment
-// router.delete(
-//     '/comments/:id',
-//     auth(),
-//     validateRequest(CommentValidations.commentIdParamValidationSchema),
-//     CommentControllers.deleteComment
-// );
+// Delete Comment
+router.delete(
+    '/comments/:commentId',
+    auth('ADMIN', 'USER'),
+    validateRequest(CommentValidations.commentIdParamValidationSchema),
+    CommentControllers.deleteComment
+);
 
 // // Update Comment Status — Admin
 // router.patch(

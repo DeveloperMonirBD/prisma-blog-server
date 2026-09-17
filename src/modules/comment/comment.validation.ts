@@ -60,7 +60,7 @@ const postIdParamValidationSchema = z.object({
 // Comment ID Params Validation
 const commentIdParamValidationSchema = z.object({
     params: z.object({
-        id: z
+        commentId: z
             .string({
                 message: 'Comment ID is required'
             })
