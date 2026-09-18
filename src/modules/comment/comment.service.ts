@@ -199,6 +199,10 @@ const deleteComment = async (commentId: string, userId: string) => {
     const existingComment = await prisma.comment.findUnique({
         where: {
             id: commentId
+        },
+        select: {
+            id: true,
+            authorId: true
         }
     });
 
@@ -230,6 +234,10 @@ const updateCommentStatus = async (
 
     if (!existingComment) {
         throw new AppError(404, 'Comment not found');
+    }
+
+    if (existingComment.status === payload.status) {
+        throw new AppError(400, `Comment is already ${payload.status.toLowerCase()}`);
     }
 
     const result = await prisma.comment.update({

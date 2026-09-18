@@ -4,6 +4,7 @@ import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 
 import { Prisma } from '../../generated/prisma/client';
+import AppError from '../errors/AppError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     let statusCode = 500;
@@ -14,6 +15,21 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         path: string;
         message: string;
     }> = [];
+
+    // ==============================
+    // Custom AppError
+    // ==============================
+    if (err instanceof AppError) {
+        statusCode = err.statusCode;
+        message = err.message;
+
+        errorSources = [
+            {
+                path: '',
+                message: err.message
+            }
+        ];
+    }
 
     // ==============================
     // Zod Validation Error
