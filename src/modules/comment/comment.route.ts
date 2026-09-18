@@ -32,6 +32,13 @@ router.get(
     CommentControllers.getPostComments
 );
 
+// get comments by authorId
+router.get(
+    '/comments/author/:authorId',
+    validateRequest(CommentValidations.authorIdParamValidationSchema),
+    CommentControllers.getCommentsByAuthor
+);
+
 // Update Comment
 router.patch(
     '/comments/:commentId',

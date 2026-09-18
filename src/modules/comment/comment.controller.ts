@@ -58,6 +58,19 @@ const getPostComments = catchAsync(async (req, res) => {
     });
 });
 
+// get comments by authodId
+const getCommentsByAuthor = catchAsync(async (req: Request, res: Response) => {
+    const { authorId } = req.params;
+
+    const result = await CommentServices.getCommentsByAuthor(authorId as string);
+
+    res.status(200).json({
+        success: true,
+        message: 'Author comments retrieved Successfully!',
+        data: result
+    })
+})
+
 // update comment
 const updateComment = catchAsync(async (req: Request, res: Response) => {
     const { commentId } = req.params;
@@ -104,6 +117,7 @@ export const CommentControllers = {
     createPostComment,
     createPostReply,
     getPostComments,
+    getCommentsByAuthor,
     updateComment,
     deleteComment,
     updateCommentStatus

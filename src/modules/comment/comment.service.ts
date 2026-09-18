@@ -147,12 +147,26 @@ const getPostComments = async (postId: string, page: number = 1, limit: number =
     };
 };
 
+// get comments by authorId
+const getCommentsByAuthor = async (authorId: string) => {
+    return await prisma.comment.findMany({
+        where: {
+            authorId
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+            post: {
+                select: {
+                    id: true,
+                    title: true
+                }
+            }
+        }
+    });
+};
+
 // update comment
-const updateComment = async (
-    commentId: string,
-    userId: string,
-    payload: {comment: string}
-) => {
+const updateComment = async (commentId: string, userId: string, payload: { comment: string }) => {
     const existingComment = await prisma.comment.findUnique({
         where: {
             id: commentId
@@ -193,9 +207,9 @@ const deleteComment = async (commentId: string, userId: string) => {
     }
 
     if (existingComment.authorId !== userId) {
-        throw new AppError(403, 'You are not authorized to delete this comment')
+        throw new AppError(403, 'You are not authorized to delete this comment');
     }
-    
+
     await prisma.comment.delete({
         where: {
             id: commentId
@@ -243,6 +257,7 @@ export const CommentServices = {
     createPostComment,
     createPostReply,
     getPostComments,
+    getCommentsByAuthor,
     updateComment,
     deleteComment,
     updateCommentStatus
