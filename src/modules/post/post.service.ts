@@ -173,8 +173,14 @@ const updatePost = async (
         throw new AppError(404, 'Post not found');
     }
 
+    // USER can only update their own post
     if (existingPost.authorId !== userId && userRole !== 'ADMIN') {
         throw new AppError(403, 'You are not authorized to update this post');
+    }
+
+    // USER cannot update isFeatured
+    if (userRole !== 'ADMIN' && payload.isFeatured !== undefined) {
+        throw new AppError(403, 'Only admin can update featured status');
     }
 
     const result = await prisma.post.update({
