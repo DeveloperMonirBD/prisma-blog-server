@@ -1,4 +1,5 @@
 import { Post, Prisma } from '../../../generated/prisma/client';
+import AppError from '../../errors/AppError';
 import { prisma } from '../../lib/prisma';
 import { IPaginationOptions } from '../../types/pagination';
 import { IPostFilterableFields } from './post.interface';
@@ -158,7 +159,24 @@ const getSinglePost = async (id: string) => {
 };
 
 // update post
-const updatePost = async (id: string, payload: Partial<Prisma.PostUpdateInput>): Promise<Post> => {
+const updatePost = async (
+    id: string,
+    userId: string,
+    userRole: string,
+    payload: Partial<Prisma.PostUpdateInput>
+): Promise<Post> => {
+    const existingPost = await prisma.post.findUnique({
+        where: { id }
+    });
+
+    if (!existingPost) {
+        throw new AppError(404, 'Post not found');
+    }
+
+    if (existingPost.authorId !== userId && userRole !== 'ADMIN') {
+        throw new AppError(403, 'You are not authorized to update this post');
+    }
+
     const result = await prisma.post.update({
         where: { id },
         data: payload
@@ -168,7 +186,19 @@ const updatePost = async (id: string, payload: Partial<Prisma.PostUpdateInput>):
 };
 
 // delete post
-const deletePost = async (id: string): Promise<Post> => {
+const deletePost = async (id: string, userId: string, userRole: string): Promise<Post> => {
+    const existingPost = await prisma.post.findUnique({
+        where: { id }
+    });
+
+    if (!existingPost) {
+        throw new AppError(404, 'Post not found');
+    }
+
+    if (existingPost.authorId !== userId && userRole !== 'ADMIN') {
+        throw new AppError(403, 'You are not authorized to delete this post');
+    }
+
     const result = await prisma.post.delete({
         where: { id }
     });

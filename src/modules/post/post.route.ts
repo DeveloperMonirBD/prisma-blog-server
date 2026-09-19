@@ -31,6 +31,7 @@ router.get(
 // Update Post (Params UUID & Body Validate)
 router.patch(
     '/posts/:id',
+    auth('ADMIN', 'USER'),
     validateRequest(PostValidations.postIdParamValidationSchema),
     validateRequest(PostValidations.updatePostValidationSchema),
     PostController.updatePost
@@ -39,7 +40,7 @@ router.patch(
 // Delete Post (UUID Validate)
 router.delete(
     '/posts/:id',
-    auth('ADMIN'),
+    auth('ADMIN', 'USER'),
     validateRequest(PostValidations.postIdParamValidationSchema),
     PostController.deletePost
 );
