@@ -6,11 +6,28 @@ import { statisticValidations } from './statistic.validation';
 
 const router = Router();
 
+// Statistics Overview
 router.get(
-    '/statistic',
+    '/overview',
     auth('ADMIN'),
     validateRequest(statisticValidations.statisticsQueryValidationSchema),
-    StatisticControllers.getStatistics
+    StatisticControllers.getStatisticsOverview
+);
+
+//statistics Grouth
+router.get(
+    '/grouth',
+    auth('ADMIN'),
+    validateRequest(statisticValidations.statisticsQueryValidationSchema),
+    StatisticControllers.getStatisticsGrowth
+);
+
+// Top Content
+router.get(
+    '/top-content',
+    auth('ADMIN'),
+    validateRequest(statisticValidations.statisticsQueryValidationSchema),
+    StatisticControllers.getTopContent
 );
 
 export const statisticRouter = router;

@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma';
 
-const getStatistics = async () => {
+// Get Statistics Overview
+const getStatisticsOverview = async () => {
     const [
         totalUsers,
         adminUsers,
@@ -21,10 +22,7 @@ const getStatistics = async () => {
         approvedComments,
         rejectedComments,
 
-        totalViews,
-
-        mostViewedPosts,
-        mostCommentedPosts
+        totalViews
     ] = await Promise.all([
         // =========================
         // User Statistics
@@ -126,57 +124,6 @@ const getStatistics = async () => {
             _sum: {
                 views: true
             }
-        }),
-
-        // =========================
-        // Most Viewed Posts
-        // =========================
-        prisma.post.findMany({
-            orderBy: {
-                views: 'desc'
-            },
-            take: 5,
-            select: {
-                id: true,
-                title: true,
-                views: true,
-                status: true,
-                isFeatured: true,
-                author: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                }
-            }
-        }),
-
-        // =========================
-        // Most Commented Posts
-        // =========================
-        prisma.post.findMany({
-            orderBy: {
-                comments: {
-                    _count: 'desc'
-                }
-            },
-            take: 5,
-            select: {
-                id: true,
-                title: true,
-                views: true,
-                author: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                _count: {
-                    select: {
-                        comments: true
-                    }
-                }
-            }
         })
     ]);
 
@@ -208,15 +155,18 @@ const getStatistics = async () => {
 
         views: {
             total: totalViews._sum.views ?? 0
-        },
-
-        topContent: {
-            mostViewedPosts,
-            mostCommentedPosts
         }
     };
 };
 
+// Statistics Growth
+const getStatisticsGrowth = async () => {};
+
+// Top Content
+const getTopContent = async () => {};
+
 export const StatisticServices = {
-    getStatistics
+    getStatisticsOverview,
+    getStatisticsGrowth,
+    getTopContent
 };
