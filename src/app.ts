@@ -5,6 +5,7 @@ import { auth } from './lib/auth';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 import { PostRouter } from './modules/post/post.route';
 import { CommentRouter } from './modules/comment/comment.route';
+import { statisticRouter } from './modules/statistic/statistic.route';
 
 const app: Application = express();
 
@@ -33,6 +34,9 @@ app.use('/api', PostRouter);
 
 // Comment Routes
 app.use('/api', CommentRouter);
+
+// Statistic Routes
+app.use('/api', statisticRouter);
 
 // 404 Error handler
 app.use((req: Request, res: Response) => {
