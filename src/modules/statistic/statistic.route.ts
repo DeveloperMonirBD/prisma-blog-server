@@ -16,7 +16,7 @@ router.get(
 
 //statistics Grouth
 router.get(
-    '/grouth',
+    '/growth',
     auth('ADMIN'),
     validateRequest(statisticValidations.statisticsQueryValidationSchema),
     StatisticControllers.getStatisticsGrowth

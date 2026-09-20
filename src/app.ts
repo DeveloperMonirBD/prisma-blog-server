@@ -36,7 +36,7 @@ app.use('/api', PostRouter);
 app.use('/api', CommentRouter);
 
 // Statistic Routes
-app.use('/api', statisticRouter);
+app.use('/api/statistics', statisticRouter);
 
 // 404 Error handler
 app.use((req: Request, res: Response) => {

@@ -159,11 +159,166 @@ const getStatisticsOverview = async () => {
     };
 };
 
-// Statistics Growth
-const getStatisticsGrowth = async () => {};
+// Get Statistics Growth
+const getStatisticsGrowth = async () => {
+    const today = new Date();
 
-// Top Content
-const getTopContent = async () => {};
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 6);
+    startDate.setHours(0, 0, 0, 0);
+
+    const [users, posts, comments] = await Promise.all([
+        prisma.user.findMany({
+            where: {
+                createdAt: {
+                    gte: startDate
+                }
+            },
+            select: {
+                createdAt: true
+            }
+        }),
+
+        prisma.post.findMany({
+            where: {
+                createdAt: {
+                    gte: startDate
+                }
+            },
+            select: {
+                createdAt: true
+            }
+        }),
+
+        prisma.comment.findMany({
+            where: {
+                createdAt: {
+                    gte: startDate
+                }
+            },
+            select: {
+                createdAt: true
+            }
+        })
+    ]);
+
+    const growth = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + index);
+
+        const dateString = date.toISOString().split('T')[0];
+
+        const userCount = users.filter(
+            user => user.createdAt.toISOString().split('T')[0] === dateString
+        ).length;
+
+        const postCount = posts.filter(
+            post => post.createdAt.toISOString().split('T')[0] === dateString
+        ).length;
+
+        const commentCount = comments.filter(
+            comment => comment.createdAt.toISOString().split('T')[0] === dateString
+        ).length;
+
+        return {
+            date: dateString,
+            users: userCount,
+            posts: postCount,
+            comments: commentCount
+        };
+    });
+
+    return growth;
+};
+
+// Get Top Content
+const getTopContent = async () => {
+    const [mostViewedPosts, mostCommentedPosts, topAuthors] = await Promise.all([
+        // =========================
+        // Most Viewed Posts
+        // =========================
+        prisma.post.findMany({
+            orderBy: {
+                views: 'desc'
+            },
+            take: 5,
+            select: {
+                id: true,
+                title: true,
+                views: true,
+                status: true,
+                isFeatured: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        }),
+
+        // =========================
+        // Most Commented Posts
+        // =========================
+        prisma.post.findMany({
+            orderBy: {
+                comments: {
+                    _count: 'desc'
+                }
+            },
+            take: 5,
+            select: {
+                id: true,
+                title: true,
+                views: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                _count: {
+                    select: {
+                        comments: true
+                    }
+                }
+            }
+        }),
+
+        // =========================
+        // Top Authors
+        // =========================
+        prisma.user.findMany({
+            where: {
+                posts: {
+                    some: {}
+                }
+            },
+            orderBy: {
+                posts: {
+                    _count: 'desc'
+                }
+            },
+            take: 5,
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                }
+            }
+        })
+    ]);
+
+    return {
+        mostViewedPosts,
+        mostCommentedPosts,
+        topAuthors
+    };
+};
 
 export const StatisticServices = {
     getStatisticsOverview,
