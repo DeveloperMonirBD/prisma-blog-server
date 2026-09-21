@@ -212,10 +212,59 @@ const deletePost = async (id: string, userId: string, userRole: string): Promise
     return result;
 };
 
+// get posts by author id
+const getPostsByAuthor = async (authorId: string) => {
+    const author = await prisma.user.findUnique({
+        where: {
+            id: authorId
+        },
+        select: {
+            id: true,
+            name: true,
+            image: true
+        }
+    });
+
+    if (!author) {
+        throw new AppError(404, 'Author not found');
+    }
+
+    const posts = await prisma.post.findMany({
+        where: {
+            authorId
+        },
+        orderBy: {
+            createdAt: 'desc'
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            },
+            _count: {
+                select: {
+                    comments: {
+                        where: {
+                            parentId: null,
+                            status: 'APPROVED'
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return posts;
+};
+
 export const PostServices = {
     createPost,
     getAllPosts,
     getSinglePost,
     updatePost,
-    deletePost
+    deletePost,
+    getPostsByAuthor
 };

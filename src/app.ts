@@ -3,9 +3,9 @@ import cors from 'cors';
 import express, { Application, type Request, type Response } from 'express';
 import { auth } from './lib/auth';
 import globalErrorHandler from './middlewares/globalErrorHandler';
-import { PostRouter } from './modules/post/post.route';
-import { CommentRouter } from './modules/comment/comment.route';
-import { statisticRouter } from './modules/statistic/statistic.route';
+import { PostRouter } from './modules/posts/post.route';
+import { CommentRouter } from './modules/comments/comment.route';
+import { statisticRouter } from './modules/statistics/statistic.route';
 
 const app: Application = express();
 

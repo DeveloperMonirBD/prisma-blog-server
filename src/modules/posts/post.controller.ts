@@ -83,10 +83,24 @@ const deletePost = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// get posts by author ID
+const getPostsByAuthor = catchAsync(async (req: Request, res: Response) => {
+    const { authorId } = req.params;
+
+    const result = await PostServices.getPostsByAuthor(authorId as string)
+
+    res.status(200).json({
+        success: true,
+        message: 'Author Posts retrieved successfully!',
+        data: result
+    })
+})
+
 export const PostController = {
     createPost,
     getAllPosts,
     getSinglePost,
     updatePost,
-    deletePost
+    deletePost,
+    getPostsByAuthor
 };

@@ -68,9 +68,23 @@ const updatePostValidationSchema = z.object({
     })
 });
 
+// Author ID Params Validation
+const authorIdParamValidationSchema = z.object({
+    params: z.object({
+        authorId: z
+            .string({
+                message: 'Author ID is required'
+            })
+            .min(1, {
+                message: 'Author ID cannot be empty'
+            })
+    })
+});
+
 export const PostValidations = {
     createPostValidationSchema,
     getAllPostsQueryValidationSchema,
     postIdParamValidationSchema,
-    updatePostValidationSchema
+    updatePostValidationSchema,
+    authorIdParamValidationSchema
 };

@@ -45,4 +45,11 @@ router.delete(
     PostController.deletePost
 );
 
+// get post by authorId
+router.get(
+    '/posts/author/:authorId',
+    validateRequest(PostValidations.authorIdParamValidationSchema),
+    PostController.getPostsByAuthor
+)
+
 export const PostRouter = router;
