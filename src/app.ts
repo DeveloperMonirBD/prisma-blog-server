@@ -3,9 +3,10 @@ import cors from 'cors';
 import express, { Application, type Request, type Response } from 'express';
 import { auth } from './lib/auth';
 import globalErrorHandler from './middlewares/globalErrorHandler';
-import { PostRouter } from './modules/posts/post.route';
-import { CommentRouter } from './modules/comments/comment.route';
-import { statisticRouter } from './modules/statistics/statistic.route';
+import { PostRouter } from './modules/post/post.route';
+import { CommentRouter } from './modules/comment/comment.route';
+import { statisticRouter } from './modules/statistic/statistic.route';
+import { UserRouter } from './modules/user/user.route';
 
 const app: Application = express();
 
@@ -37,6 +38,9 @@ app.use('/api', CommentRouter);
 
 // Statistic Routes
 app.use('/api/statistics', statisticRouter);
+
+// User Route 
+app.use('/api/users', UserRouter);
 
 // 404 Error handler
 app.use((req: Request, res: Response) => {
