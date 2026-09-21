@@ -1,5 +1,8 @@
+import { Prisma } from '../../../generated/prisma';
 import AppError from '../../errors/AppError';
 import { prisma } from '../../lib/prisma';
+import { IPaginationOptions } from '../../types/pagination';
+import { IUserFilterableFields } from './user.interface';
 
 // get my profile
 const getMyProfile = async (userId: string) => {
@@ -69,7 +72,95 @@ const updateMyProfile = async (
     return result;
 };
 
+// get all users - admin
+const getAllUsers = async (filters: IUserFilterableFields, options: IPaginationOptions) => {
+    const { page, limit, skip, sortBy, sortOrder } = options;
+
+    const { searchTerm, role, status } = filters;
+
+    const andConditions: Prisma.UserWhereInput[] = [];
+
+    // search by name or email
+    if (searchTerm) {
+        andConditions.push({
+            OR: [
+                {
+                    name: {
+                        contains: searchTerm,
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    email: {
+                        contains: searchTerm,
+                        mode: 'insensitive'
+                    }
+                }
+            ]
+        });
+    }
+
+    // search by role
+    if (role) {
+        andConditions.push({
+            role
+        });
+    }
+
+    // filter by status
+    if (status) {
+        andConditions.push({
+            status
+        });
+    }
+
+    const whereConditions: Prisma.UserWhereInput =
+        andConditions.length > 0 ? { AND: andConditions } : {};
+
+    const [users, total] = await Promise.all([
+        prisma.user.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: {
+                [sortBy]: sortOrder
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                emailVerified: true,
+                image: true,
+                phone: true,
+                role: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        }),
+
+        prisma.user.count({
+            where: whereConditions
+        })
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1
+        },
+        data: users
+    };
+};
+
 export const UserServices = {
     getMyProfile,
-    updateMyProfile
+    updateMyProfile,
+    getAllUsers
 };

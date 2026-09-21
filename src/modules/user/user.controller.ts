@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import { IPaginationOptions } from '../../types/pagination';
 import catchAsync from '../../utils/catchAsync';
+import { getPaginationOptions } from '../../utils/pagination';
 import { UserServices } from './user.service';
+import { IUserFilterableFields } from './user.interface';
 
 // get my profile
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
@@ -24,7 +27,29 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// get all users - admin
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+   
+    const filters: IUserFilterableFields = {
+        searchTerm: req.query.searchTerm as string | undefined,
+        role: req.query.role as string | undefined,
+        status: req.query.status as string | undefined
+    };
+
+    const options: IPaginationOptions = getPaginationOptions(req);
+
+    const result = await UserServices.getAllUsers(filters, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Users fetched successfully!',
+        meta: result.meta,
+        data: result.data
+    });
+});
+
 export const UserControllers = {
     getMyProfile,
-    updateMyProfile
+    updateMyProfile,
+    getAllUsers
 };

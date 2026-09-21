@@ -34,9 +34,7 @@ const createPost = async (data: Prisma.PostCreateInput): Promise<Post> => {
 const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationOptions) => {
     const { searchTerm, status, tags, isFeatured } = filters;
 
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options;
-
-    const skip = (page - 1) * limit;
+    const { page, limit, skip, sortBy, sortOrder } = options;
 
     const andConditions: Prisma.PostWhereInput[] = [];
 
