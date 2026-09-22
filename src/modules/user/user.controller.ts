@@ -51,6 +51,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await UserServices.getSingleUser(id as string);
+
     res.status(200).json({
         success: true,
         message: 'User retrieved successfully!',
@@ -58,9 +59,23 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// Update a single user by ID
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+    const {id} = req.params
+
+    const result = await UserServices.updateUser(id as string, req.body)
+    
+    res.status(200).json({
+        success: true,
+        message: 'User updated successfully!',
+        data: result
+    })
+})
+
 export const UserControllers = {
     getMyProfile,
     updateMyProfile,
     getAllUsers,
-    getSingleUser
+    getSingleUser,
+    updateUser
 };

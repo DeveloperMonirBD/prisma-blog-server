@@ -2,7 +2,7 @@ import { Prisma } from '../../../generated/prisma';
 import AppError from '../../errors/AppError';
 import { prisma } from '../../lib/prisma';
 import { IPaginationOptions } from '../../types/pagination';
-import { IUserFilterableFields } from './user.interface';
+import { IUserFilterableFields, IUserUpdate } from './user.interface';
 
 // get my profile
 const getMyProfile = async (userId: string) => {
@@ -193,9 +193,47 @@ const getSingleUser = async (userId: string) => {
     return user;
 };
 
+// Update a single user by ID
+const updateUser = async (userId: string, payload: IUserUpdate) => {
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
+
+    if (!existingUser) {
+        throw new AppError(404, 'User not found');
+    }
+
+    const result = await prisma.user.update({
+        where: {
+            id: userId
+        },
+
+        data: payload,
+
+        // Return only the fields we want in the response
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            phone: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    return result;
+};
+
 export const UserServices = {
     getMyProfile,
     updateMyProfile,
     getAllUsers,
-    getSingleUser
+    getSingleUser,
+    updateUser
 };

@@ -25,12 +25,19 @@ router.get(
     UserControllers.getAllUsers
 );
 
-// Get a single user by ID
+// get a single user by ID
 router.get(
     '/:id',
     auth('ADMIN'),
     UserControllers.getSingleUser
 );
+
+// update a user by id
+router.patch(
+    '/:id',
+    auth('ADMIN'),
+    UserControllers.updateUser
+)
 
 
 export const UserRouter = router;
