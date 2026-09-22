@@ -25,5 +25,12 @@ router.get(
     UserControllers.getAllUsers
 );
 
+// Get a single user by ID
+router.get(
+    '/:id',
+    auth('ADMIN'),
+    UserControllers.getSingleUser
+);
+
 
 export const UserRouter = router;

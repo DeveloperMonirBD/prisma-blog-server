@@ -74,9 +74,9 @@ const updateMyProfile = async (
 
 // get all users - admin
 const getAllUsers = async (filters: IUserFilterableFields, options: IPaginationOptions) => {
-    const { page, limit, skip, sortBy, sortOrder } = options;
-
     const { searchTerm, role, status } = filters;
+
+    const { page, limit, skip, sortBy, sortOrder } = options;
 
     const andConditions: Prisma.UserWhereInput[] = [];
 
@@ -159,8 +159,43 @@ const getAllUsers = async (filters: IUserFilterableFields, options: IPaginationO
     };
 };
 
+// Get a single user by ID
+const getSingleUser = async (userId: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            phone: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+
+            _count: {
+                select: {
+                    posts: true,
+                    comments: true
+                }
+            }
+        }
+    });
+
+    if (!user) {
+        throw new AppError(404, 'User not found');
+    }
+
+    return user;
+};
+
 export const UserServices = {
     getMyProfile,
     updateMyProfile,
-    getAllUsers
+    getAllUsers,
+    getSingleUser
 };

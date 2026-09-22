@@ -38,7 +38,7 @@ const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationO
 
     const andConditions: Prisma.PostWhereInput[] = [];
 
-    // title or content search logic
+    // title, content or tags search logic
     if (searchTerm) {
         andConditions.push({
             OR: [
@@ -104,12 +104,14 @@ const getAllPosts = async (filters: IPostFilterableFields, options: IPaginationO
         where: whereConditions
     });
 
+    const totalPages = Math.ceil(total / limit);
+
     return {
         meta: {
             page,
             limit,
             total,
-            totalPage: Math.ceil(total / limit)
+            totalPages
         },
         data: result
     };
