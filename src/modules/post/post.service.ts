@@ -183,6 +183,15 @@ const updatePost = async (
         throw new AppError(403, 'Only admin can update featured status');
     }
 
+    // post data update checked
+    const hasChanges = Object.entries(payload).some(
+        ([key, value]) => existingPost[key as keyof typeof existingPost] !== value
+    );
+
+    if (!hasChanges) {
+        throw new AppError(400, 'No changes detected. Post data is already up to date.');
+    }
+
     const result = await prisma.post.update({
         where: { id },
         data: payload

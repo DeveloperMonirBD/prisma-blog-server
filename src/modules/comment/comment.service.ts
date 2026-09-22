@@ -181,6 +181,15 @@ const updateComment = async (commentId: string, userId: string, payload: { comme
         throw new AppError(403, 'You are not authorized to update this comment');
     }
 
+    // comment data update checked
+    const hasChanges = Object.entries(payload).some(
+        ([key, value]) => existingComment[key as keyof typeof existingComment] !== value
+    );
+
+    if (!hasChanges) {
+        throw new AppError(400, 'No changes detected. Comment data is already up to date.');
+    }
+
     const result = await prisma.comment.update({
         where: {
             id: commentId
@@ -238,6 +247,15 @@ const updateCommentStatus = async (
 
     if (existingComment.status === payload.status) {
         throw new AppError(400, `Comment is already ${payload.status.toLowerCase()}`);
+    }
+
+    // comment data update checked
+    const hasChanges = Object.entries(payload).some(
+        ([key, value]) => existingComment[key as keyof typeof existingComment] !== value
+    );
+
+    if (!hasChanges) {
+        throw new AppError(400, 'No changes detected. Comment status is already up to date.');
     }
 
     const result = await prisma.comment.update({

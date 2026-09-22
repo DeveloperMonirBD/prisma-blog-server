@@ -205,6 +205,15 @@ const updateUser = async (userId: string, payload: IUserUpdate) => {
         throw new AppError(404, 'User not found');
     }
 
+    // existing data checked
+    const hasChanges = Object.entries(payload).some(
+        ([key, value]) => existingUser[key as keyof typeof existingUser] !== value
+    );
+
+    if (!hasChanges) {
+        throw new AppError(400, 'No changes detected. User data is already up to date.');
+    }
+
     const result = await prisma.user.update({
         where: {
             id: userId
