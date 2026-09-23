@@ -239,10 +239,30 @@ const updateUser = async (userId: string, payload: IUserUpdate) => {
     return result;
 };
 
+// Delete a single user by ID
+const deleteUser = async (userId: string) => {
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
+
+    if (!existingUser) {
+        throw new AppError(404, 'User not found');
+    }
+
+    await prisma.user.delete({
+        where: {
+            id: userId
+        }
+    });
+};
+
 export const UserServices = {
     getMyProfile,
     updateMyProfile,
     getAllUsers,
     getSingleUser,
-    updateUser
+    updateUser,
+    deleteUser
 };
