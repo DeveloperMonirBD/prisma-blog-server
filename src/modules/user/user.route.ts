@@ -6,6 +6,9 @@ import { UserValidations } from './user.validation';
 
 const router = Router();
 
+//check 
+router.post('/check-email', UserControllers.checkEmailExists);
+
 // get my profile
 router.get('/me', auth('ADMIN', 'USER'), UserControllers.getMyProfile);
 

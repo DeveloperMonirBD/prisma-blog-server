@@ -41,7 +41,10 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         autoSignIn: false,
-        requireEmailVerification: true
+        requireEmailVerification: true,
+        onExistingUserSignUp: async ({ user }) => {
+            console.log(`Existing email registration attempted: ${user.email}`);
+        }
     },
     emailVerification: {
         sendOnSignUp: true,

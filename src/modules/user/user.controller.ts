@@ -5,6 +5,34 @@ import { getPaginationOptions } from '../../utils/pagination';
 import { IUserFilterableFields } from './user.interface';
 import { UserServices } from './user.service';
 
+// check Email
+const checkEmailExists = async (req: Request, res: Response) => {
+    try {
+        const email = req.body?.email;
+
+        if (typeof email !== 'string' || !email.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Valid email is required'
+            });
+        }
+
+        const exists = await UserServices.checkEmailExists(email);
+
+        return res.status(200).json({
+            success: true,
+            data: { exists }
+        });
+    } catch (error) {
+        console.error('Check email error:', error);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+
 // get my profile
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
     const result = await UserServices.getMyProfile(req.user!.id);
@@ -84,6 +112,7 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const UserControllers = {
+    checkEmailExists,
     getMyProfile,
     updateMyProfile,
     getAllUsers,

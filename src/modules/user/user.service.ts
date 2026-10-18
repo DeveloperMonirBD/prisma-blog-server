@@ -4,6 +4,23 @@ import { prisma } from '../../lib/prisma';
 import { IPaginationOptions } from '../../types/pagination';
 import { IUserFilterableFields, IUserUpdate } from './user.interface';
 
+// check Email
+const checkEmailExists = async (email: string) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: normalizedEmail
+        },
+        select: {
+            id: true
+        }
+    });
+
+    return Boolean(user);
+};
+
+
 // get my profile
 const getMyProfile = async (userId: string) => {
     const user = await prisma.user.findUnique({
@@ -259,6 +276,7 @@ const deleteUser = async (userId: string) => {
 };
 
 export const UserServices = {
+    checkEmailExists,
     getMyProfile,
     updateMyProfile,
     getAllUsers,
